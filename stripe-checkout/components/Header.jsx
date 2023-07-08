@@ -4,6 +4,7 @@ import { CartContext } from "@/context/cartContext"
 import { useContext, useState } from "react"
 import { Button,Container,Navbar,Modal } from "react-bootstrap"
 import CartProduct from "./CartProduct"
+import { useRouter } from "next/navigation"
 
 export const Header = () => {
 
@@ -12,8 +13,25 @@ export const Header = () => {
   const [show,setShow] = useState(false)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
+  const router = useRouter()
 
   const productsCount = cart.items.reduce((sum,product) => sum+product.quantity,0)
+
+  const checkout = async() => {
+    await fetch('/api/checkout',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({items:cart.items})
+    }).then((response) => {
+      return response.json()
+    }).then((response) => {
+      if(response.url){
+        router.push(response.url)
+      }
+    })
+  }
 
   return (
     <div>
@@ -38,7 +56,7 @@ export const Header = () => {
               <CartProduct id={currProduct.id} quantity={currProduct.quantity} key={id}/>
             ))}
             <h2>Total:{cart.getTotalCost().toFixed(2)}</h2>
-            <Button variant="success">Purchase Items</Button>
+            <Button variant="success" onClick={checkout}>Purchase Items</Button>
           </> 
           : <h3>Empty Cart</h3>}
         </Modal.Body>
