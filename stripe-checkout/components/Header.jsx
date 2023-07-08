@@ -1,13 +1,18 @@
 'use client'
 
-import { useState } from "react"
+import { CartContext } from "@/context/cartContext"
+import { useContext, useState } from "react"
 import { Button,Container,Navbar,Modal } from "react-bootstrap"
 
 export const Header = () => {
 
+  const cart = useContext(CartContext)
+
   const [show,setShow] = useState(false)
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
+
+  const productsCount = cart.items.reduce((sum,product) => sum+product.quantity,0)
 
   return (
     <div>
@@ -16,7 +21,7 @@ export const Header = () => {
         <Navbar.Toggle/>
 
         <Navbar.Collapse className="justify-content-end">
-            <Button onClick={handleShow}>Cart 0 Items</Button>
+            <Button onClick={handleShow}>Cart ({productsCount}) Items</Button>
         </Navbar.Collapse>
       </Navbar>
 
